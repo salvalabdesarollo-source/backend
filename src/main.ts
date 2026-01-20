@@ -16,7 +16,9 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
 
-  const config = new DocumentBuilder()
+  // Configurar server URL si está detrás de un proxy (nginx con /prod)
+  const basePath = process.env.BASE_PATH || '';
+  const documentBuilder = new DocumentBuilder()
     .setTitle('SalvaLab - Escaneo API')
     .setDescription('SalvaLab - Escaneo API')
     .setVersion('1.0')
@@ -25,13 +27,20 @@ async function bootstrap() {
       name: 'token',
       scheme: 'http',
       in: 'header',
-    })
-    .build();
+    });
+  
+  if (basePath) {
+    documentBuilder.addServer(basePath, 'API Base Path');
+  }
+  
+  const config = documentBuilder.build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('docs', app, document, {
+  const swaggerPath = process.env.SWAGGER_PATH ?? 'docs';
+  SwaggerModule.setup(swaggerPath, app, document, {
     swaggerOptions: {
       persistAuthorization: true,
     },
+    customSiteTitle: 'SalvaLab - Escaneo API Documentation',
   });
 
   await app.listen(PORT, '0.0.0.0');
