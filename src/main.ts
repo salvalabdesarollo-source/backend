@@ -44,12 +44,11 @@ async function bootstrap() {
     swaggerOptions: {
       persistAuthorization: true,
       validatorUrl: null,
-      supportedSubmitMethods: [],
+      tryItOutEnabled: true,
     },
     customSiteTitle: 'SalvaLab - Escaneo API Documentation',
     customCss: '.swagger-ui .topbar { display: none }',
     customfavIcon: '/favicon.ico',
-    customJs: [],
   });
 
   await app.listen(PORT, '0.0.0.0');
