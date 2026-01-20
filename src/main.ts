@@ -36,11 +36,20 @@ async function bootstrap() {
   const config = documentBuilder.build();
   const document = SwaggerModule.createDocument(app, config);
   const swaggerPath = process.env.SWAGGER_PATH ?? 'docs';
-  SwaggerModule.setup(swaggerPath, app, document, {
+  
+  // Remover slash inicial si existe para evitar doble slash
+  const cleanSwaggerPath = swaggerPath.startsWith('/') ? swaggerPath.slice(1) : swaggerPath;
+  
+  SwaggerModule.setup(cleanSwaggerPath, app, document, {
     swaggerOptions: {
       persistAuthorization: true,
+      validatorUrl: null,
+      supportedSubmitMethods: [],
     },
     customSiteTitle: 'SalvaLab - Escaneo API Documentation',
+    customCss: '.swagger-ui .topbar { display: none }',
+    customfavIcon: '/favicon.ico',
+    customJs: [],
   });
 
   await app.listen(PORT, '0.0.0.0');
