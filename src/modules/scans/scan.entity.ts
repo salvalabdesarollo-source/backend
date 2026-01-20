@@ -7,8 +7,8 @@ import { ScanStatus } from './enums/scan-status.enum';
 @Entity({ name: 'scans' })
 export class Scan extends AppBaseEntity {
 
-  @Column({ type: 'timestamptz' })
-  dateTime: Date;
+  @Column({ type: 'varchar', length: 255 })
+  dateTime: string;
 
   @Column({ type: 'text', nullable: true })
   detail: string | null;
