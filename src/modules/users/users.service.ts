@@ -15,7 +15,7 @@ export class UsersService extends TypeOrmCrudService<User> {
     const username = dto.username.toLowerCase();
     const user = await this.userRepository
       .createQueryBuilder('user')
-      .where('user.username = :username', { username })
+      .where('LOWER(user.username) = LOWER(:username)', { username })
       .getOne();
 
     if (!user) {
