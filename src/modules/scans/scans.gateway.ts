@@ -9,10 +9,20 @@ export type ScanEventAction =
   | 'unassigned'
   | 'scanned';
 
+// Configurar path del socket basado en BASE_PATH si existe
+const basePath = process.env.BASE_PATH || '';
+const socketPath = basePath 
+  ? `${basePath}/socket.io/`.replace(/\/\//g, '/') // Evitar doble slash
+  : '/socket.io/';
+
 @WebSocketGateway({
+  path: socketPath,
   cors: {
     origin: '*',
+    credentials: true,
   },
+  transports: ['websocket', 'polling'],
+  allowEIO3: true,
 })
 export class ScansGateway {
   @WebSocketServer()
