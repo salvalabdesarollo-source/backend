@@ -44,6 +44,6 @@ export class AppModule implements OnModuleInit {
 
   async onModuleInit() {
     // Configurar zona horaria de PostgreSQL a Ciudad Juárez, México
-    await this.dataSource.query(`SET timezone = 'America/Chihuahua'`);
+    await this.dataSource.query(`SET timezone = 'America/Ciudad_Juarez'`);
   }
 }
