@@ -13,11 +13,10 @@ import { ScanStatus } from '../enums/scan-status.enum';
 export class CreateScanDto {
   @ApiProperty({
     description: 'Scan date and time (ISO 8601)',
-    example: '2026-01-18T14:30:00.000Z',
+    example: '2026-01-18 14:30:00',
   })
-  @IsDateString()
   @IsNotEmpty()
-  dateTime: Date;
+  dateTime: string;
 
   @ApiPropertyOptional({
     description: 'Scan detail',
