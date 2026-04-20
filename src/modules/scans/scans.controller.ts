@@ -67,6 +67,68 @@ import { UpdateScanDto } from './dto/update-scan.dto';
 export class ScansController implements CrudController<Scan> {
   constructor(public service: ScansService) {}
 
+  @ApiQuery({
+    name: 'period',
+    required: false,
+    description: 'Quick range: today, week or month',
+  })
+  @ApiQuery({
+    name: 'startDate',
+    required: false,
+    description: 'Range start in YYYY-MM-DD',
+  })
+  @ApiQuery({
+    name: 'endDate',
+    required: false,
+    description: 'Range end in YYYY-MM-DD',
+  })
+  @ApiQuery({
+    name: 'clinicId',
+    required: false,
+    type: Number,
+    description: 'Filter by clinic id',
+  })
+  @ApiQuery({
+    name: 'doctorId',
+    required: false,
+    type: Number,
+    description: 'Filter by doctor id',
+  })
+  @ApiQuery({
+    name: 'createdById',
+    required: false,
+    type: Number,
+    description: 'Filter by creator admin/user id',
+  })
+  @ApiQuery({
+    name: 'assignedToId',
+    required: false,
+    type: Number,
+    description: 'Filter by assigned scanner/user id',
+  })
+  @ApiBearerAuth()
+  @UseGuards(UserAuthGuard)
+  @Get('stats/summary')
+  async getStats(
+    @Query('period') period?: string,
+    @Query('startDate') startDate?: string,
+    @Query('endDate') endDate?: string,
+    @Query('clinicId') clinicId?: string,
+    @Query('doctorId') doctorId?: string,
+    @Query('createdById') createdById?: string,
+    @Query('assignedToId') assignedToId?: string,
+  ): Promise<Record<string, unknown>> {
+    return await this.service.getStats({
+      period,
+      startDate,
+      endDate,
+      clinicId: clinicId ? Number(clinicId) : undefined,
+      doctorId: doctorId ? Number(doctorId) : undefined,
+      createdById: createdById ? Number(createdById) : undefined,
+      assignedToId: assignedToId ? Number(assignedToId) : undefined,
+    });
+  }
+
   @Patch(':id/mark-scanned')
   @ApiBearerAuth()
   @UseGuards(UserAuthGuard)
