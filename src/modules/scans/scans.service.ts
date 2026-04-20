@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@dataui/crud-typeorm';
-import { Repository, SelectQueryBuilder } from 'typeorm';
+import { In, Repository, SelectQueryBuilder } from 'typeorm';
 import type { CrudRequest } from '@dataui/crud';
 import { Scan } from './scan.entity';
 import { ScansGateway } from './scans.gateway';
@@ -219,6 +219,7 @@ export class ScansService extends TypeOrmCrudService<Scan> {
       cancelledStatus: ScanStatus.CANCELLED,
       confirmedStatus: ScanStatus.CONFIRMED,
       unconfirmedStatus: ScanStatus.UNCONFIRMED,
+      scannerRoles: [UserRole.Scanner, UserRole.Administrator],
     };
     const completedExpr = `CASE WHEN scan."isScanned" = true THEN 1 ELSE 0 END`;
     const pendingExpr = `CASE WHEN scan."isScanned" = false AND scan.status != :cancelledStatus THEN 1 ELSE 0 END`;
@@ -271,7 +272,11 @@ export class ScansService extends TypeOrmCrudService<Scan> {
       this.doctorsRepository.count(),
       this.clinicsRepository.count(),
       this.usersRepository.countBy({ role: UserRole.Administrator }),
-      this.usersRepository.countBy({ role: UserRole.Scanner }),
+      this.usersRepository.count({
+        where: {
+          role: In([UserRole.Scanner, UserRole.Administrator]),
+        },
+      }),
       baseQuery
         .clone()
         .select('doctor.id', 'id')
@@ -356,7 +361,9 @@ export class ScansService extends TypeOrmCrudService<Scan> {
         .addSelect(`COALESCE(SUM(${completedExpr}), 0)`, 'completedScans')
         .addSelect(`COALESCE(SUM(${pendingExpr}), 0)`, 'pendingScans')
         .addSelect(`COALESCE(SUM(${cancelledExpr}), 0)`, 'cancelledScans')
-        .andWhere('assignedTo.role = :scannerRole', { scannerRole: UserRole.Scanner })
+        .andWhere('assignedTo.role IN (:...scannerRoles)', {
+          scannerRoles: [UserRole.Scanner, UserRole.Administrator],
+        })
         .groupBy('assignedTo.id')
         .addGroupBy('assignedTo.username')
         .addGroupBy('assignedTo.role')
@@ -494,7 +501,7 @@ export class ScansService extends TypeOrmCrudService<Scan> {
 
   private buildStatsBaseQuery(
     filters: StatsFilters,
-    params: Record<string, string>,
+    params: Record<string, unknown>,
     dateRange: StatsDateRange | null,
   ): SelectQueryBuilder<Scan> {
     const query = this.repo
