@@ -70,7 +70,7 @@ export class ScansController implements CrudController<Scan> {
   @ApiQuery({
     name: 'period',
     required: false,
-    description: 'Quick range: today, week or month',
+    description: 'Quick range: all, today, week or month',
   })
   @ApiQuery({
     name: 'startDate',

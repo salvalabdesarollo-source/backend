@@ -547,6 +547,10 @@ export class ScansService extends TypeOrmCrudService<Scan> {
     }
 
     if (period) {
+      if (period === 'all') {
+        return null;
+      }
+
       const now = new Date();
       const start = new Date(now);
       start.setHours(0, 0, 0, 0);
@@ -573,7 +577,7 @@ export class ScansService extends TypeOrmCrudService<Scan> {
         return this.toDateRange(start, end);
       }
 
-      throw new BadRequestException('Invalid period. Use today, week or month.');
+      throw new BadRequestException('Invalid period. Use all, today, week or month.');
     }
 
     if (!startDate || !endDate) {
