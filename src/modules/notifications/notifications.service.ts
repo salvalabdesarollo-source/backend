@@ -1,4 +1,4 @@
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { cert, getApps, initializeApp } from 'firebase-admin/app';
@@ -6,6 +6,7 @@ import { getMessaging } from 'firebase-admin/messaging';
 import * as fs from 'fs';
 import * as path from 'path';
 import { User } from '../users/user.entity';
+import { SendTestNotificationDto } from './dto/send-test-notification.dto';
 
 export type PushNotificationPayload = {
   title: string;
@@ -54,6 +55,43 @@ export class NotificationsService implements OnModuleInit {
 
   isEnabled(): boolean {
     return this.enabled;
+  }
+
+  async sendTestNotification(dto: SendTestNotificationDto) {
+    const user = await this.usersRepository.findOne({ where: { id: dto.userId } });
+
+    if (!user) {
+      throw new NotFoundException(`User ${dto.userId} not found`);
+    }
+
+    if (!user.FCM_token) {
+      return {
+        sent: false,
+        userId: user.id,
+        username: user.username,
+        message: 'User has no FCM_token registered',
+      };
+    }
+
+    const payload: PushNotificationPayload = {
+      title: dto.title ?? 'Notificación de prueba',
+      body: dto.body ?? 'Si ves esto, Firebase está funcionando correctamente.',
+      data: {
+        action: 'test_notification',
+        userId: String(user.id),
+      },
+    };
+
+    const sent = await this.sendToToken(user.id, user.FCM_token, payload);
+
+    return {
+      sent,
+      userId: user.id,
+      username: user.username,
+      message: sent
+        ? 'Test notification sent successfully'
+        : 'Failed to send test notification',
+    };
   }
 
   async sendToUser(
