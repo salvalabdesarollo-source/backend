@@ -23,7 +23,7 @@ export class Scan extends AppBaseEntity {
   })
   status: ScanStatus;
 
-  @Column({ type: 'boolean', default: true })
+  @Column({ type: 'boolean', default: false })
   followUpReminderSent: boolean;
 
   @ManyToOne(() => User, { nullable: false })
