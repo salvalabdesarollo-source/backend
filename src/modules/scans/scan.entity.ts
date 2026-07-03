@@ -23,6 +23,9 @@ export class Scan extends AppBaseEntity {
   })
   status: ScanStatus;
 
+  @Column({ type: 'boolean', default: true })
+  followUpReminderSent: boolean;
+
   @ManyToOne(() => User, { nullable: false })
   createdBy: User;
 
