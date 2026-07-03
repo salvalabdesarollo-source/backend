@@ -33,8 +33,12 @@ export class ScanFollowUpReminderService {
       .andWhere('scan.status = :status', { status: ScanStatus.CONFIRMED })
       .andWhere('scan."followUpReminderSent" = false')
       .andWhere('scan."assignedToId" IS NOT NULL')
-      .andWhere('scan."dateTime" >= :slotStart', { slotStart })
-      .andWhere('scan."dateTime" < :slotEnd', { slotEnd })
+      .andWhere('scan."dateTime"::timestamptz >= CAST(:slotStart AS timestamptz)', {
+        slotStart,
+      })
+      .andWhere('scan."dateTime"::timestamptz < CAST(:slotEnd AS timestamptz)', {
+        slotEnd,
+      })
       .getMany();
 
     if (scans.length === 0) {
