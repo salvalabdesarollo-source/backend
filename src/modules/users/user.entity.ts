@@ -20,6 +20,9 @@ export class User extends AppBaseEntity {
   @Column('varchar', { length: 40, nullable: true })
   phone?: string | null;
 
+  @Column('varchar', { length: 512, nullable: true })
+  FCM_token?: string | null;
+
   @BeforeInsert()
   async hashPasswordOnCreate() {
     if (!this.password) {

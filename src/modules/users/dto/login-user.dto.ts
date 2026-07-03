@@ -1,5 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
 
 export class LoginUserDto {
   @ApiProperty({
@@ -18,4 +18,13 @@ export class LoginUserDto {
   @IsString()
   @IsNotEmpty()
   password: string;
+
+  @ApiPropertyOptional({
+    description: 'Firebase Cloud Messaging device token',
+    example: 'dXyz123...',
+  })
+  @IsString()
+  @IsOptional()
+  @MaxLength(512)
+  FCM_token?: string;
 }

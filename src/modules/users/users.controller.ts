@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Headers, Patch, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Crud } from '@dataui/crud';
 import { User } from './user.entity';
@@ -7,6 +7,7 @@ import { UserAuthGuard } from '../../core/guards/user-auth.guard';
 import { LoginUserDto } from './dto/login-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateFcmTokenDto } from './dto/update-fcm-token.dto';
 
 @Crud({
   model: {
@@ -18,7 +19,7 @@ import { CreateUserDto } from './dto/create-user.dto';
     replace: UpdateUserDto,
   },
   query: {
-    exclude: ['password'],
+    exclude: ['password', 'FCM_token'],
     sort: [
       {
         field: 'createdAt',
@@ -58,5 +59,16 @@ export class UsersController {
   @Post('login')
   async login(@Body() dto: LoginUserDto): Promise<any> {
     return await this.service.login(dto);
+  }
+
+  @Patch('fcm-token')
+  @ApiBearerAuth()
+  @UseGuards(UserAuthGuard)
+  async updateFcmToken(
+    @Headers('token') token: string | undefined,
+    @Headers('authorization') authorization: string | undefined,
+    @Body() dto: UpdateFcmTokenDto,
+  ) {
+    return await this.service.updateFcmToken(token ?? authorization, dto);
   }
 }
