@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import { IsNotEmpty, IsNumber, IsString, MaxLength } from 'class-validator';
 
 export class CreateClinicDto {
@@ -19,11 +20,12 @@ export class CreateClinicDto {
   @IsNotEmpty()
   @MaxLength(200)
   address: string;
-  
+
   @ApiProperty({
     description: 'Clinic latitude',
     example: 37.7749,
   })
+  @Type(() => Number)
   @IsNumber()
   @IsNotEmpty()
   latitude: number;
@@ -32,6 +34,7 @@ export class CreateClinicDto {
     description: 'Clinic longitude',
     example: -122.4194,
   })
+  @Type(() => Number)
   @IsNumber()
   @IsNotEmpty()
   longitude: number;

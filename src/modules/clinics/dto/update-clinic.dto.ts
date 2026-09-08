@@ -1,4 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import { IsNumber, IsOptional, IsString, MaxLength } from 'class-validator';
 
 export class UpdateClinicDto {
@@ -19,19 +20,21 @@ export class UpdateClinicDto {
   @IsOptional()
   @MaxLength(200)
   address?: string;
-  
+
   @ApiPropertyOptional({
     description: 'Clinic latitude',
     example: 37.7749,
   })
+  @Type(() => Number)
   @IsNumber()
   @IsOptional()
   latitude?: number;
-  
+
   @ApiPropertyOptional({
     description: 'Clinic longitude',
     example: -122.4194,
   })
+  @Type(() => Number)
   @IsNumber()
   @IsOptional()
   longitude?: number;
